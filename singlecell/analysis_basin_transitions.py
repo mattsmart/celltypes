@@ -2,11 +2,22 @@ import os
 import utils.init_multiprocessing  # import before numpy
 import numpy as np
 import time
-from multiprocessing import Pool, cpu_count, current_process
+
+#from multiprocessing import Pool, cpu_count, current_process
+
+# One option to avoid the pickle issue with vanilla multiprocessing pool
+from multiprocessing import cpu_count, current_process
+from multiprocessing.pool import ThreadPool as Pool
+
+"""
+# Another option using fork of multiprocessing
+from multiprocessing import cpu_count, current_process
+from pathos.multiprocessing import ProcessPool as Pool
+"""
 
 from singlecell.analysis_basin_plotting import plot_proj_timeseries, plot_basin_occupancy_timeseries, plot_basin_step
 from singlecell.singlecell_class import Cell
-from singlecell.singlecell_constants import ASYNC_BATCH, FIELD_APPLIED_PROTOCOL
+from singlecell.singlecell_constants import MEMS_MEHTA, ASYNC_BATCH, FIELD_APPLIED_PROTOCOL
 from singlecell.singlecell_fields import field_setup
 from singlecell.singlecell_simsetup import singlecell_simsetup, unpack_simsetup
 from utils.file_io import run_subdir_setup, runinfo_append, RUNS_FOLDER
@@ -257,12 +268,12 @@ def fast_basin_stats(init_cond, init_state, init_id, ensemble, num_processes, si
     # prepare fn args and kwargs for wrapper
     kwargs_dict = {'num_steps': num_steps, 'anneal_protocol': anneal_protocol, 'field_protocol': field_protocol,
                    'occ_threshold': occ_threshold, 'async_batch': async_batch, 'verbose': verbose, 'profile': profile}
-    fn_args_dict = [0]*num_processes
+    fn_args_dict = [0] * num_processes
     if verbose:
         print("NUM_PROCESSES:", num_processes)
     assert ensemble % num_processes == 0
     for i in range(num_processes):
-        subensemble = ensemble / num_processes
+        subensemble = int(ensemble / num_processes)
         cell_startidx = i * subensemble
         if verbose:
             print("process:", i, "job size:", subensemble, "runs")
@@ -304,7 +315,7 @@ def fast_basin_stats(init_cond, init_state, init_id, ensemble, num_processes, si
 def ensemble_projection_timeseries(init_cond, ensemble, num_processes, simsetup=None, num_steps=100,
                                    occ_threshold=OCC_THRESHOLD, anneal_protocol=ANNEAL_PROTOCOL,
                                    field_protocol=FIELD_APPLIED_PROTOCOL, async_batch=ASYNC_BATCH, output=True, plot=True,
-                                   profile=False):
+                                   profile=False, verbose=False):
     """
     Args:
     - init_cond: np array of init state OR string memory label
@@ -342,7 +353,7 @@ def ensemble_projection_timeseries(init_cond, ensemble, num_processes, simsetup=
     transfer_dict, proj_timeseries_array, basin_occupancy_timeseries, worker_times = \
         fast_basin_stats(init_cond, init_state, init_id, ensemble, num_processes, simsetup=simsetup, num_steps=num_steps,
                          anneal_protocol=anneal_protocol, field_protocol=field_protocol, occ_threshold=occ_threshold,
-                         async_batch=async_batch, verbose=False, profile=profile)
+                         async_batch=async_batch, verbose=verbose, profile=profile)
 
     # save data and plot figures
     if output:
@@ -424,27 +435,31 @@ def basin_transitions(init_cond, ensemble, num_steps, beta, simsetup):
 
 
 if __name__ == '__main__':
-    gen_basin_data = False
+    gen_basin_data = True
     plot_grouped_data = False
     profile = False
-    plot_groups_of_transitions = True
+    plot_groups_of_transitions = False
 
     # prep simulation globals
-    simsetup = singlecell_simsetup()
+    simsetup = singlecell_simsetup(npzpath=MEMS_MEHTA)
 
     if gen_basin_data:
         # common: 'HSC' / 'Common Lymphoid Progenitor (CLP)' / 'Common Myeloid Progenitor (CMP)' /
         #         'Megakaryocyte-Erythroid Progenitor (MEP)' / 'Granulocyte-Monocyte Progenitor (GMP)' / 'thymocyte DN'
         #         'thymocyte - DP' / 'neutrophils' / 'monocytes - classical'
-        init_cond = 'macrophage'  # note HSC index is 6 in mehta mems
-        ensemble = 128
-        num_steps = 100
-        num_proc = cpu_count() / 2  # seems best to use only physical core count (1 core ~ 3x slower than 4)
+        init_cond = 'HSC'  # note HSC index is 6 in mehta mems
+        ensemble = 1008  #1000
+        num_steps = 200
+        #num_proc = int(cpu_count() / 2)  # seems best to use only physical core count (1 core ~ 3x slower than 4)
+        num_proc = int(cpu_count())
         anneal_protocol = "protocol_A"
-        field_protocol = "miR_21"  # "yamanaka" or "miR_21" or None
+        field_protocol = None  # "yamanaka" or "miR_21" or None
         async_batch = True
         plot = True
         parallel = True
+
+        print("num_proc", type(num_proc), num_proc)
+        print("ensemble", type(ensemble), ensemble)
 
         # run and time basin ensemble sim
         t0 = time.time()
@@ -452,7 +467,8 @@ if __name__ == '__main__':
             proj_timeseries_array, basin_occupancy_timeseries, worker_times, io_dict = \
                 ensemble_projection_timeseries(init_cond, ensemble, num_proc, num_steps=num_steps, simsetup=simsetup,
                                                occ_threshold=OCC_THRESHOLD, anneal_protocol=anneal_protocol,
-                                               field_protocol=field_protocol, async_batch=async_batch, plot=plot)
+                                               field_protocol=field_protocol, async_batch=async_batch, plot=plot,
+                                               verbose=True)
         else:
             # Unparallelized for testing/profiling:
             init_state, init_id = get_init_info(init_cond, simsetup)
@@ -460,7 +476,7 @@ if __name__ == '__main__':
             transfer_dict, proj_timeseries_array, basin_occupancy_timeseries, worker_times = \
                 get_basin_stats(init_cond, init_state, init_id, ensemble, 0, simsetup, num_steps=num_steps,
                                 anneal_protocol=anneal_protocol, field_protocol=field_protocol,
-                                occ_threshold=OCC_THRESHOLD, async_batch=async_batch, verbose=False, profile=True)
+                                occ_threshold=OCC_THRESHOLD, async_batch=async_batch, verbose=True, profile=True)
             proj_timeseries_array = proj_timeseries_array / ensemble  # ensure normalized (get basin stats won't do this)
         t1 = time.time() - t0
         print("Runtime:", t1)
