@@ -122,10 +122,12 @@ if __name__ == '__main__':
     }
 
     # 3) instantiate
+    print('\nInitializing multicell class...')
     multicell = Multicell(simsetup_main, verbose=True, **multicell_kwargs)
 
     # 4) run sim
-    multicell.simulation_standard()
+    print('\nStarting multicell sim...')
+    multicell.simulation_standard(verbose=True)
     #multicell.simulation_fast()
 
     # looped version of steps 3) and 4):

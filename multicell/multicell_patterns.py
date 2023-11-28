@@ -164,7 +164,6 @@ if __name__ == '__main__':
     lattice, io_dict = sim_lattice_as_cell(simsetup, num_steps, beta, app_field, KAPPA)
     print('Done')
 
-
     """
     plot_period = 1
     state_int = True
@@ -172,15 +171,15 @@ if __name__ == '__main__':
     mc_sim_wrapper(simsetup, gridsize=n, num_steps=steps, buildstring=buildstring, exosome_string=fieldstring,
            field_remove_ratio=fieldprune, ext_field_strength=ext_field_strength, app_field=app_field,
            app_field_strength=KAPPA, beta=beta, plot_period=plot_period, state_int=state_int,
-           meanfield=meanfield)
-    """
+           meanfield=False)"""
+
 
     """
     for beta in [0.01, 0.1, 0.5, 1.0, 1.5, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 4.0, 5.0, 10.0, 100.0]:
         mc_sim_wrapper(simsetup, gridsize=n, num_steps=steps, buildstring=buildstring, exosome_string=fieldstring,
                field_remove_ratio=fieldprune, ext_field_strength=ext_field_strength, app_field=app_field,
-               app_field_strength=app_field_strength, beta=beta, plot_period=plot_period, state_int=state_int, meanfield=meanfield)
-    """
+               app_field_strength=app_field_strength, beta=beta, plot_period=plot_period, state_int=state_int, meanfield=meanfield)"""
+
     if make_video:
         print('Making video...')
         # fhead = "composite_lattice_step"

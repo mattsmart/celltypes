@@ -140,7 +140,7 @@ def get_state_of_lattice(lattice, simsetup, datatype='full'):
     return x
 
 
-def calc_compression_ratio(x, eta_0=None, datatype='full', elemtype=np.bool, method='manual'):
+def calc_compression_ratio(x, eta_0=None, datatype='full', elemtype=bool, method='manual'):
     """
     TODO add an eta_min ref point as all zeros of np.int with shape x.shape
     x - the data object (assume lies between -1 and 1)
@@ -150,7 +150,7 @@ def calc_compression_ratio(x, eta_0=None, datatype='full', elemtype=np.bool, met
     """
     assert method in ['manual', 'package']
     assert datatype in ['full', 'custom']
-    assert elemtype in [np.bool, np.int, np.float]
+    assert elemtype in [bool, int, float]
 
     def foo(x_to_compress):
         fname = 'tmp.npz'
@@ -161,7 +161,7 @@ def calc_compression_ratio(x, eta_0=None, datatype='full', elemtype=np.bool, met
 
     if datatype == 'full':
         if eta_0 is None:
-            x_random = np.random.randint(0, high=2, size=x.shape, dtype=np.int)
+            x_random = np.random.randint(0, high=2, size=x.shape, dtype=int)
             eta_0 = foo(x_random)  # consider max over few realizations?
         if x.dtype != elemtype:
             print('NOTE: Recasting x as elemtype', elemtype, 'from', x.dtype)
@@ -172,20 +172,20 @@ def calc_compression_ratio(x, eta_0=None, datatype='full', elemtype=np.bool, met
         if eta_0 is None:
             assert -1 <= np.min(x) <= np.max(x) <= 1
             #x_random = np.random.rand(*(x.shape))*2 - 1  # TODO flag ref as float or bool
-            if elemtype==np.bool:
-                if x.dtype!=np.bool:
+            if elemtype==bool:
+                if x.dtype!=bool:
                     print('NOTE: Recasting x as np.float from', x.dtype)
-                    x = x.astype(dtype=np.bool)
-                x_random = np.random.randint(0, high=2, size=x.shape, dtype=np.bool)
-            elif elemtype==np.int:
-                assert np.issubdtype(x.dtype, np.int)
+                    x = x.astype(dtype=bool)
+                x_random = np.random.randint(0, high=2, size=x.shape, dtype=bool)
+            elif elemtype==int:
+                assert np.issubdtype(x.dtype, int)
                 nint = len(set(x))
-                x_random = np.random.randint(0, high=nint+1, size=x.shape, dtype=np.int)
+                x_random = np.random.randint(0, high=nint+1, size=x.shape, dtype=int)
             else:
-                assert elemtype==np.float
-                if x.dtype!=np.float:
+                assert elemtype==float
+                if x.dtype!=float:
                     print('NOTE: Recasting x as np.float from', x.dtype)
-                    x = x.astype(dtype=np.float)
+                    x = x.astype(dtype=float)
                 x_random = np.random.rand(*(x.shape)) * 2 - 1
             eta_0 = foo(x_random)  # consider max over few realizations?
         eta = foo(x)
@@ -195,15 +195,15 @@ def calc_compression_ratio(x, eta_0=None, datatype='full', elemtype=np.bool, met
 def test_compression_ratio():
     nn = 10000
     print("test_compression_ratio for x: %dx1 array..." % nn)
-    x1 = np.ones(nn, dtype=np.int)  #[1, 1, 1, 1]
-    x2 = np.zeros(nn, dtype=np.int) #[-1, -1, -1, -1]
+    x1 = np.ones(nn, dtype=int)  #[1, 1, 1, 1]
+    x2 = np.zeros(nn, dtype=int) #[-1, -1, -1, -1]
     x3 = np.random.randint(0, high=2, size=nn)
     eta_ratio_1, eta_1, eta_0_1 = \
-        calc_compression_ratio(x1, eta_0=None, datatype='custom', method='manual', elemtype=np.bool)
+        calc_compression_ratio(x1, eta_0=None, datatype='custom', method='manual', elemtype=bool)
     eta_ratio_2, eta_2, eta_0_2 = \
-        calc_compression_ratio(x2, eta_0=None, datatype='custom', method='manual', elemtype=np.bool)
+        calc_compression_ratio(x2, eta_0=None, datatype='custom', method='manual', elemtype=bool)
     eta_ratio_3, eta_3, eta_0_3 = \
-        calc_compression_ratio(x3, eta_0=None, datatype='custom', method='manual', elemtype=np.bool)
+        calc_compression_ratio(x3, eta_0=None, datatype='custom', method='manual', elemtype=bool)
     print('x1', 'gives', eta_ratio_1, eta_1, eta_0_1)
     print('x2', 'gives', eta_ratio_2, eta_2, eta_0_2)
     print('x3', 'gives', eta_ratio_3, eta_3, eta_0_3)
@@ -219,13 +219,13 @@ def test_compression_ratio():
     print(x5.shape)
     x6 = np.random.randint(-1, high=2, size=xshape)
     x7 = np.random.randint(0, high=2, size=xshape) * 2 - 1
-    x_dict ={1: {'data': x1, 'label': 'all +1', 'dtype': np.bool},
-             2: {'data': x2, 'label': 'all -1', 'dtype': np.bool},
-             3: {'data': x3, 'label': 'all 0',  'dtype': np.bool},
-             4: {'data': x4, 'label': 'all 0 except all 1 first col', 'dtype': np.bool},
-             5: {'data': x5, 'label': 'rand floats -1 to 1', 'dtype': np.float},
-             6: {'data': x6, 'label': 'rand ints -1, 0, 1', 'dtype': np.float},
-             7: {'data': x7, 'label': 'rand ints -1, 1', 'dtype': np.float}}
+    x_dict ={1: {'data': x1, 'label': 'all +1', 'dtype': bool},
+             2: {'data': x2, 'label': 'all -1', 'dtype': bool},
+             3: {'data': x3, 'label': 'all 0',  'dtype': bool},
+             4: {'data': x4, 'label': 'all 0 except all 1 first col', 'dtype': bool},
+             5: {'data': x5, 'label': 'rand floats -1 to 1', 'dtype': float},
+             6: {'data': x6, 'label': 'rand ints -1, 0, 1', 'dtype': float},
+             7: {'data': x7, 'label': 'rand ints -1, 1', 'dtype': float}}
     for idx in range(1, len(list(x_dict.keys()))+1):
         elem = x_dict[idx]['data']
         elemtype = x_dict[idx]['dtype']

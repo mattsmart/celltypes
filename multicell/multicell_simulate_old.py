@@ -70,7 +70,7 @@ def run_mc_sim(lattice, num_lattice_steps, data_dict, io_dict, simsetup, exosome
             exosome_remove_ratio, exosome_string, meanfield)
         data_dict['compressibility_full'][timestep_idx, :] = calc_compression_ratio(
             get_state_of_lattice(lattice, simsetup, datatype='full'),
-            eta_0=None, datatype='full', elemtype=np.int, method='manual')
+            eta_0=None, datatype='full', elemtype=int, method='manual')
 
     def lattice_plot_init(lattice, memory_idx_list):
         lattice_projection_composite(lattice, 0, n, io_dict['latticedir'], simsetup, state_int=state_int)
@@ -441,10 +441,10 @@ def mc_sim_wrapper(simsetup, gridsize=GRIDSIZE, num_steps=NUM_LATTICE_STEPS, bui
 
         ref_0 = calc_compression_ratio(
             x=np.zeros((len(lattice), len(lattice[0]), simsetup['N']), dtype=int), method='manual',
-            eta_0=data_dict['compressibility_full'][0,2], datatype='full', elemtype=np.int)
+            eta_0=data_dict['compressibility_full'][0,2], datatype='full', elemtype=int)
         ref_1 = calc_compression_ratio(
             x=np.ones((len(lattice), len(lattice[0]), simsetup['N']), dtype=int), method='manual',
-            eta_0=data_dict['compressibility_full'][0,2], datatype='full', elemtype=np.int)
+            eta_0=data_dict['compressibility_full'][0,2], datatype='full', elemtype=int)
         plt.axhline(y=ref_0[0], ls='-.', color='gray')
         plt.axhline(y=ref_1[0], ls='-.', color='blue')
         print(ref_0,ref_0,ref_0,ref_0, 'is', ref_0, 'vs', ref_1)
@@ -518,6 +518,7 @@ if __name__ == '__main__':
         flag_housekeeping=flag_housekeeping, field_housekeeping_strength=field_housekeeping_strength,
         beta=beta, plot_period=plot_period, state_int=state_int,
         meanfield=meanfield)
+
     """
     for beta in [0.01, 0.1, 0.5, 1.0, 1.5, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 4.0, 5.0, 10.0, 100.0]:
         mc_sim_wrapper(simsetup, gridsize=n, num_steps=steps, buildstring=buildstring, exosome_string=fieldstring,

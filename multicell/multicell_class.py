@@ -593,7 +593,7 @@ class Multicell:
         # 1) compressibility statistics
         graph_state_01 = ((1 + self.graph_state_arr[:, step])/2).astype(int)
         comp_ratio = calc_compression_ratio(
-            graph_state_01, eta_0=None, datatype='full', elemtype=np.int, method='manual')
+            graph_state_01, eta_0=None, datatype='full', elemtype=int, method='manual')
         self.data_dict['compressibility_full'][step_indices, :] = comp_ratio
         # 2) energy statistics
         energy_values = calc_graph_energy(self, step, norm=True)
@@ -774,9 +774,9 @@ class Multicell:
                 if fp_reached or fp_reached_flicker:
                     break
 
-    def simulation_standard(self):
+    def simulation_standard(self, verbose=False):
         # run the simulation
-        self.dynamics_full()
+        self.dynamics_full(verbose=verbose)
 
         # """check the data dict"""
         self.plot_datadict_memory(use_proj=False)
@@ -931,11 +931,11 @@ class Multicell:
             ref_0 = calc_compression_ratio(
                 x=np.zeros((nn, nn, self.simsetup['N']), dtype=int),
                 method='manual',
-                eta_0=self.data_dict['compressibility_full'][0, 2], datatype='full', elemtype=np.int)
+                eta_0=self.data_dict['compressibility_full'][0, 2], datatype='full', elemtype=int)
             ref_1 = calc_compression_ratio(
                 x=np.ones((nn, nn, self.simsetup['N']), dtype=int),
                 method='manual',
-                eta_0=self.data_dict['compressibility_full'][0, 2], datatype='full', elemtype=np.int)
+                eta_0=self.data_dict['compressibility_full'][0, 2], datatype='full', elemtype=int)
             plt.axhline(y=ref_0[0], ls='-.', color='gray')
             plt.axhline(y=ref_1[0], ls='-.', color='blue')
             #print(ref_0, ref_0, ref_0, ref_0, 'is', ref_0, 'vs', ref_1)
