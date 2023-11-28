@@ -35,7 +35,7 @@ def build_lattice_memories(simsetup, M):
                 lattice_vec[start_spin:end_spin] = celltype_vec
         return lattice_vec
 
-    mem1 = [['mem_A' for _ in range(sqrtM)] for _ in range(sqrtM)]  # TODO check elsewhere for bug that was here [[0]*a]*b (list of list)
+    mem1 = [['mem_A' for _ in range(sqrtM)] for _ in range(sqrtM)]
     mem2 = [['mem_A' for _ in range(sqrtM)] for _ in range(sqrtM)]
     mem3 = [['mem_A' for _ in range(sqrtM)] for _ in range(sqrtM)]
     # build mem 1 -- number 1 on 12x12 grid

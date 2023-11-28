@@ -267,7 +267,7 @@ def state_int_to_colour(state_int, simsetup, proj=True, noanti=True):
 
     def linear_interpolate(val, c2, c1=color_anchor):
         assert 0.0 <= val <= 1.0
-        return cout
+        return (1 - val) * c1 + val * c2
 
     # gewt similarities i.e. proj or overlap with all cell types
     state = label_to_state(state_int, simsetup['N'], use_neg=True)

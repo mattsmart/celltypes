@@ -59,7 +59,7 @@ def check_still_fp(test_fp, J_multicell):
     - manyruns_gamma_bifurcation_candidates()
     """
     A = test_fp
-    B = np.sign(np.dot(J_multicell, test_fp))  # TODO if any sgn(0), then what?
+    B = np.sign(np.dot(J_multicell, test_fp))
     return np.array_equal(A, B)
 
 
@@ -71,7 +71,7 @@ def scan_gamma_bifurcation_candidates(
     Find {gamma*}, the observed points where the fixed point has changed.
     The fixed point shifting is not a symptom of a bifurcation, for example consider pitchfork
      bifurcation, the two fixed points continue to shift after the (singular) bifurcation.
-    TODO:
+    Note:
         Consider continuous dynamical system.
         When a static FP suddenly starts shifting in almost continuous fashion, that's a signature
          of a bifurcation (e.g. transcritical or pitchfork).
@@ -203,7 +203,6 @@ def plot_bifurcation_candidates_curve(bifurcation_candidates, gamma_space, outdi
         plt.show()
 
 
-# TODO check that not symmetrizing loaded W (in simsetup)
 if __name__ == '__main__':
     force_symmetry_W = True
     destabilize_celltypes_gamma = True

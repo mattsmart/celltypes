@@ -35,7 +35,7 @@ class SpatialCell(Cell):
         surroundings = [[row_to_search % gridsize, col_to_search % gridsize]
                         for row_to_search in range(row - search_radius, row + search_radius + 1)
                         for col_to_search in range(col - search_radius, col + search_radius + 1)]
-        surroundings.remove(self.location)  # TODO test behaviour
+        surroundings.remove(self.location)
         return surroundings
 
     def get_local_paracrine_field(self, lattice, neighbour_locs, simsetup, flag_01=False):

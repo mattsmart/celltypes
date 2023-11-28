@@ -27,11 +27,10 @@ def calc_lattice_energy(lattice, simsetup, field, fs, gamma, search_radius, exos
             H_self += hamiltonian(cell.get_current_state(), simsetup['J'], field=None, fs=0.0)
             if field is not None:
                 H_app -= fs * np.dot(cell.get_current_state().T, field)
-    # compute interactions  # TODO check validity
+    # compute interactions
     # meanfield case
     if meanfield:
         mf_search_radius = None
-        # TODO ok that cell is neighbour with self as well? remove diag
         mf_neighbours = [[a, b] for a in range(M2) for b in range(M1)]
     else:
         assert search_radius is not None
@@ -88,7 +87,6 @@ def calc_graph_energy(multicell, step, norm=True):
     H_pairwise = 0
     H_app = 0
 
-    # TODO how to incorporate exosomes
     H_quadratic_form = -0.5 * np.dot(np.dot(multicell.matrix_J_multicell,
                                             multicell.graph_state_arr[:, step]),
                                      multicell.graph_state_arr[:, step]) \
@@ -104,7 +102,7 @@ def calc_graph_energy(multicell, step, norm=True):
         field_on_cell = multicell.get_field_on_cell(a, step)
         H_app -= np.dot(cell_state.T, field_on_cell)
 
-        # compute interactions  # TODO check validity
+        # compute interactions
         #  note that a cells neighboursa are the ones which 'send' to it
         #  if A_ij = 1, then there is a connection from i to j
         #  to get all the senders to cell i, we need to look at col i

@@ -122,14 +122,9 @@ if __name__ == '__main__':
     num_runs = int(1e4)  # int(1e4)
 
     # place to generate many runs
-    #gamma_list = [0.0, 0.02, 0.05, 0.1, 0.2, 1.0, 2.0, 20.0]
-
-    #gamma_list = [0.0, 0.02, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1,
-    #              0.15, 0.2, 0.4, 0.6, 0.8, 1.0, 2.0, 20.0]
     gamma_list = [0.0, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10,
                   0.15, 0.2, 0.4, 0.6, 0.8, 0.9, 1.0, 20.0]
 
-    #gamma_list = [0.0]
     beta_main = np.Inf #np.Inf   # 2000.0
     if beta_main == np.Inf:
         print('Note (beta is np.Inf): using deterministic settings')
@@ -146,7 +141,7 @@ if __name__ == '__main__':
         #beta_str = 'beta%.2f_' % beta_main
 
     for gamma_main in gamma_list:
-        multirun_name = 'W14_gamma%.2f_10k_periodic_R1_p3_M100_machineEps' % (gamma_main)
+        multirun_name = 'W14_gamma%.2f_10k_periodic_R1_p3_M100' % (gamma_main)
         #multirun_name = '%sW1pattern_gamma%.2f_10k_p3_M100' % (beta_str, gamma_main)
         #multirun_name = '%sWvary_s0randomInit_gamma%.2f_10k_periodic_fixedorderV3_p3_M100' % (beta_str, gamma_main)
         #multirun_name = '%sWvary_dualInit_gamma%.2f_10k_periodic_fixedorderV3_p3_M100' % (beta_str, gamma_main)
@@ -200,7 +195,6 @@ if __name__ == '__main__':
             # setup 2.3) signalling field (exosomes + cell-cell signalling via W matrix)
             # Note: consider rescale gamma as gamma / num_cells * num_plaquette
             # global gamma acts as field_strength_signal, it tunes exosomes AND sent field
-            # TODO implement exosomes for dynamics_blockparallel case
             exosome_string = "no_exo_field"  # on/off/all/no_exo_field; 'off' = send info only 'off' genes
             exosome_remove_ratio = 0.0       # amount of exo field idx to randomly prune from each cell
 

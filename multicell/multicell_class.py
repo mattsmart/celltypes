@@ -99,8 +99,6 @@ class Multicell:
         flag_state_int:  (bool) track and plot the int rep of cell state (asserts low N)
         io_dict:         (dict) stores output file paths according to utils.file_io
         data_dict:       (dict) live data storage for graph state and computed properties
-
-    # TODO what if applied field is different on different nodes? (e.g. top half of lattice?)
     """
     def __init__(self, simsetup, verbose=True, **kwargs):
         if verbose:
@@ -161,7 +159,7 @@ class Multicell:
         self.io_dict = self.init_io_dict()
         self.data_dict = self.init_data_dict()
         # final assertion of attributes
-        self.init_assert_and_sanitize()         # TODO
+        self.init_assert_and_sanitize()
         if verbose:
             print('done')
 
@@ -374,9 +372,6 @@ class Multicell:
             J_diag_blocks = np.kron(np.eye(self.num_cells), self.simsetup['J'])
 
         # Term B of J_multicell (cell-cell interactions)
-        # TODO what about exosomes?
-        #  should it be accounted for as a Term C here; or
-        #  should it be accounted for dynamically
         adjacency_arr_lowtri = np.tril(self.matrix_A, k=-1)
         adjacency_arr_uptri = np.triu(self.matrix_A, k=1)
         J_offdiag_blocks = np.kron(adjacency_arr_lowtri, W_scaled.T) \
@@ -430,7 +425,7 @@ class Multicell:
 
         return graph_state
 
-    # TODO remove asap
+    # TODO remove
     def TEMP_graph_state_from_lattice(self, lattice, sidelength, verbose=True):
         if verbose:
             print('call to TEMP_graph_state_from_lattice() -- remove this function')
@@ -799,7 +794,6 @@ class Multicell:
         if no_datatdict: assert no_visualize
 
         # """get data dict from initial state"""
-        # TODO in flicker case should analyze & plot the final two states
         if not no_datatdict:
             self.step_datadict_update_global(0, fill_to_end=False)    # measure initial state
         if not no_visualize:
@@ -843,13 +837,13 @@ class Multicell:
         return self.current_step
 
     def get_cell_state(self, cell_idx, step):
-        assert 0 <= cell_idx < self.num_cells  # TODO think this is not needed
+        assert 0 <= cell_idx < self.num_cells
         a = self.num_genes * cell_idx
         b = self.num_genes * (cell_idx + 1)
         return self.graph_state_arr[a:b, step]
 
     def get_field_on_cell(self, cell_idx, step):
-        assert 0 <= cell_idx < self.num_cells  # TODO think this is not needed
+        assert 0 <= cell_idx < self.num_cells
         a = self.num_genes * cell_idx
         b = self.num_genes * (cell_idx + 1)
         return self.field_applied[a:b, step]

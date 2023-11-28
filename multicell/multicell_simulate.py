@@ -40,15 +40,14 @@ if __name__ == '__main__':
     print(simsetup_main['XI'])
 
     # setup 2.1) multicell sim core parameters
-    search_radius = 3
+    search_radius = 1
     num_cells = 20**2           # global GRIDSIZE
     total_steps = 41            # global NUM_LATTICE_STEPS
     plot_period = 1
     flag_state_int = False
     flag_blockparallel = False
     beta = np.Inf  # 2000.0 use np.Inf instead of fixed 1e3, can cause rare bugs otherwise
-    #gamma = 0.8  #1.0               # i.e. field_signal_strength
-    gamma = 1.0  # 1.0               # i.e. field_signal_strength
+    gamma = 0.5                # i.e. field_signal_strength
     kappa = 0.0                # i.e. field_applied_strength
 
     # setup 2.2) graph options
@@ -61,7 +60,6 @@ if __name__ == '__main__':
     # setup 2.3) signalling field (exosomes + cell-cell signalling via W matrix)
     # Note: consider rescale gamma as gamma / num_cells * num_plaquette
     # global gamma acts as field_strength_signal, it tunes exosomes AND sent field
-    # TODO implement exosomes for dynamics_blockparallel case
     exosome_string = "no_exo_field"  # on/off/all/no_exo_field; 'off' = send info only 'off' genes
     exosome_remove_ratio = 0.0       # amount of exo field idx to randomly prune from each cell
 
@@ -127,8 +125,8 @@ if __name__ == '__main__':
     multicell = Multicell(simsetup_main, verbose=True, **multicell_kwargs)
 
     # 4) run sim
-    #multicell.simulation_standard()
-    multicell.simulation_fast()
+    multicell.simulation_standard()
+    #multicell.simulation_fast()
 
     # looped version of steps 3) and 4):
     """
