@@ -176,12 +176,8 @@ def graph_lattice_projection_composite(multicell, step, cmap_vary=False, use_pro
                         subax.text(i, j, label, color='black', ha='center', va='center')
                 # hide axis nums
                 subax.set_title('%d (%s)' % (mu, simsetup['CELLTYPE_LABELS'][mu][:24]), fontsize=8)
-                labels = [item.get_text() for item in subax.get_xticklabels()]
-                empty_string_labels = [''] * len(labels)
-                subax.set_xticklabels(empty_string_labels)
-                labels = [item.get_text() for item in subax.get_yticklabels()]
-                empty_string_labels = [''] * len(labels)
-                subax.set_yticklabels(empty_string_labels)
+                subax.set_xticklabels([])
+                subax.set_yticklabels([])
                 # nice gridlines
                 subax.set_xticks(np.arange(-.5, nn, 1))
                 subax.set_yticks(np.arange(-.5, nn, 1))

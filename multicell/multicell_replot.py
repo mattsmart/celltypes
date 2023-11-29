@@ -1,4 +1,4 @@
-import proplot
+import cmcrameri.cm as cmc
 #proplot.use_style('default')
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -75,20 +75,21 @@ def fixed_state_to_colour_map(N, show=True, shuffle=False):
     #assert N == 9  # untested otherwise, inappropriate for large N > 14 or so
     num_states = 2 ** N
 
-    def shift_cmap(cmap, frac):
+    def shift_cmap_and_resample(cmap, num_states, shift=0, low=0, high=1):
         """Shifts a colormap by a certain fraction.
 
         Keyword arguments:
         cmap -- the colormap to be shifted. Can be a colormap name or a Colormap object
-        frac -- the fraction of the colorbar by which to shift (must be between 0 and 1)
+        shift -- the fraction of the colorbar by which to shift (must be between 0 and 1)
         """
-        N = 512
+        assert -1. <= shift <= 1.
         if isinstance(cmap, str):
             cmap = plt.get_cmap(cmap)
         n = cmap.name
-        x = np.linspace(0, 1, N)
-        out = np.roll(x, int(N * frac))
+        x = np.linspace(low, high, num_states)
+        out = np.roll(x, int(num_states * shift))
         new_cmap = mpl.colors.LinearSegmentedColormap.from_list(f'{n}_s', cmap(out))
+        new_cmap = new_cmap.resampled(num_states)
         return new_cmap
 
 
@@ -143,6 +144,7 @@ def fixed_state_to_colour_map(N, show=True, shuffle=False):
              proplot.Colormap(cstring_b, samples=num_states, shift=3*deg)]"""
 
     # Version 4: manual matplotlib to not import proplot
+    '''
     deg = -24  # 66 for acton, 30 or 66 for spectral
     cstring_a = 'acton'  # Spectral acton
     cstring_b = 'Sunrise'  # Spectral Sunset
@@ -152,19 +154,35 @@ def fixed_state_to_colour_map(N, show=True, shuffle=False):
              proplot.Colormap(cstring_c, samples=num_states, shift=0, left=0.00, right=0.9),
              proplot.Colormap(cstring_a, samples=num_states, shift=1*deg, left=0.10, right=1),
              proplot.Colormap(cstring_b, samples=num_states, shift=1*deg, left=0.00, right=0.9),
-             proplot.Colormap(cstring_c, samples=num_states, shift=1*deg, left=0.00, right=0.9)]
+             proplot.Colormap(cstring_c, samples=num_states, shift=1*deg, left=0.00, right=0.9)]'''
+
+    shift = 0.1  # -0.0667
+    cmap_a = cmc.acton  # proplot 'acton'  # Spectral acton
+    cmap_b = cmc.lipari_r  ## proplot 'sunrise' #cmc.acton ##'Sunrise'  # Spectral Sunset
+    cmap_c = 'Spectral'  ## proplot 'sunrise' #cmc.acton ##'Sunrise'  # Spectral Sunset
+
+    cmaps = [shift_cmap_and_resample(cmap_a, num_states, shift=0, low=0, high=1),
+             shift_cmap_and_resample(cmap_b, num_states, shift=0, low=0, high=1),
+             shift_cmap_and_resample(cmap_c, num_states, shift=0, low=0, high=1),
+             shift_cmap_and_resample(cmap_a, num_states, shift=shift, low=0.1, high=1),
+             shift_cmap_and_resample(cmap_b, num_states, shift=shift, low=0, high=0.9),
+             shift_cmap_and_resample(cmap_c, num_states, shift=shift, low=0, high=0.9),
+             ]
 
     # build cmap, with each consecutive integer alternating amongst the num_cmaps
     colour_map = {}
     state_labels = list(range(num_states))
+
     if shuffle:
         state_labels = shuffle_state_space()
+
     num_cmaps = len(cmaps)
     for idx, label in enumerate(state_labels):
         cmap_choice = idx % num_cmaps
         colour_map[label] = cmaps[cmap_choice](idx)
 
     custom_mpl_cmap = mpl.colors.ListedColormap([colour_map[i] for i in np.arange(num_states)])
+
     if show:
         x = np.arange(num_states)
         y = np.arange(num_states)
@@ -173,6 +191,7 @@ def fixed_state_to_colour_map(N, show=True, shuffle=False):
         plt.title('fixed_state_to_colour_map() sample plot')
         plt.colorbar(ax=ax, mappable=sc)
         plt.show()
+
     return colour_map
 
 
