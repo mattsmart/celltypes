@@ -316,6 +316,7 @@ if __name__ == '__main__':
                 run_basedir_path = RUNS_FOLDER + os.sep + 'multicell_manyruns'
             else:
                 run_basedir_path = RUNS_FOLDER + os.sep + 'explore' + os.sep + 'bifurcation'
+            print('Working in:', run_basedir_path + os.sep + run_subdir)
             assert not os.path.exists(run_basedir_path + os.sep + run_subdir)
 
             multicell_kwargs_base = {

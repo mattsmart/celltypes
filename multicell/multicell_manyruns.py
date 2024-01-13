@@ -119,11 +119,10 @@ if __name__ == '__main__':
     # key runtime settings
     num_cells = 10 ** 2  # global GRIDSIZE
     total_steps = 500     # global NUM_LATTICE_STEPS
-    num_runs = int(1e4)  # int(1e4)
+    num_runs = int(1e2)  # int(1e4)
 
     # place to generate many runs
-    gamma_list = [0.0, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10,
-                  0.15, 0.2, 0.4, 0.6, 0.8, 0.9, 1.0, 20.0]
+    gamma_list = [0.0, 0.05]
 
     beta_main = np.Inf #np.Inf   # 2000.0
     if beta_main == np.Inf:
@@ -148,6 +147,7 @@ if __name__ == '__main__':
         multirun_path = RUNS_FOLDER + os.sep + 'multicell_manyruns' + os.sep + multirun_name
 
         if generate_data:
+            print('Working in:', multirun_path)
             assert not os.path.exists(multirun_path)
 
             # 1) create simsetup
