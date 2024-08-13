@@ -201,7 +201,7 @@ class Multicell:
                 self.field_applied = np.array([self.field_applied for _ in range(self.total_steps)]).T
         else:
             self.field_applied = np.zeros((self.total_spins, self.total_steps))
-        print('field_applied.shape:', self.field_applied.shape)         # TODO remove?
+        #print('field_applied.shape:', self.field_applied.shape)         # TODO remove?
 
         # beta (temperature) check
         if isinstance(self.beta, np.ndarray):
